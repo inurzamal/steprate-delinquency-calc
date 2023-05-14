@@ -21,6 +21,7 @@ public class DataRetentionTask {
     @Scheduled(fixedDelay = 600000) // Runs every 10 minutes
     public void deleteOldData() {
 //        LocalDateTime retentionDate = LocalDateTime.now().minus(30, ChronoUnit.DAYS); // Retain data for 30 days
+//        LocalDateTime retentionDate = LocalDateTime.now().minusYears(3); // Retain data for 3 years
         LocalDateTime retentionDate = LocalDateTime.now().minusMinutes(10); // Retain data for 10 minutes
 
 
