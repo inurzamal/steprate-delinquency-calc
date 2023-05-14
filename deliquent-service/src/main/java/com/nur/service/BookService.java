@@ -154,8 +154,8 @@ public class BookService {
         checkAndAddToMap(map, searchRequest.getAuthor(), BookConstants.BOOK_AUTHOR);
         checkAndAddToMap(map, searchRequest.getIsbn(), BookConstants.BOOK_ISBN);
         checkAndAddToMap(map, searchRequest.getPrice(), BookConstants.PRICE);
-        checkAndAddToMap(map, searchRequest.getPromoDate(), BookConstants.BOOK_TITLE);
-        checkAndAddToMap(map, searchRequest.getReleaseDate(), BookConstants.BOOK_TITLE);
+        checkAndAddToMap(map, searchRequest.getPromoDate(), BookConstants.PROMOTION_DATE);
+        checkAndAddToMap(map, searchRequest.getReleaseDate(), BookConstants.PUBLISHED_DATE);
         return map;
     }
 

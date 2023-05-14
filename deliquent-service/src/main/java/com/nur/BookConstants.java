@@ -7,7 +7,7 @@ public final class BookConstants {
      * assign database fields into constants
      */
     public static final String BOOK_TITLE = "title";
-    public static final String BOOK_AUTHOR = "author";
+    public static final String BOOK_AUTHOR = "author"; //AUTHOR_CITY = "author.address.city";
     public static final String BOOK_ISBN = "isbn";
     public static final String PRICE = "price";
     public static final String PROMOTION_DATE = "promoDate";
