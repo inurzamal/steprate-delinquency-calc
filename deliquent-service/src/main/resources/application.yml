@@ -2,3 +2,14 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/library
+
+#scheduled-time: 0 0 14 * * *
+scheduled-time: 5m
+
+data-retention:
+  retention-period: PT5M
+  adm100: P3Y
+  adm150: P1Y
+  isy100: P6Y
+
+

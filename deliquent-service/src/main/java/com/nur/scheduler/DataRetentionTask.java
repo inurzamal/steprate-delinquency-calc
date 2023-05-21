@@ -1,6 +1,7 @@
 package com.nur.scheduler;
 
 import com.nur.model.Book;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,12 +18,28 @@ public class DataRetentionTask {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-//    @Scheduled(cron = "0 0 1 * * *") // Runs every day at 1:00 AM
-    @Scheduled(fixedDelay = 600000) // Runs every 10 minutes
+    @Autowired
+    private DataRetentionConfig dataRetentionConfig;
+
+/*
+*
+    @Scheduled(cron = "0 0 1 * * *") // Runs every day at 1:00 AM
+    @Scheduled(cron = "0 30 11 * * *") // Runs every day at 11:30 AM
+    @Scheduled(cron = "0 0 14 * * *") // Runs every day at 2:00 PM
+    @Scheduled(cron = "${scheduled-time}")
+    @Scheduled(fixedDelay = 300000) // Runs every 5 minutes (5*1000*60)
+*
+ */
+
+//    @Scheduled(cron = "${scheduled-time}")
+    @Scheduled(fixedDelayString = "${scheduled-time}")
     public void deleteOldData() {
 //        LocalDateTime retentionDate = LocalDateTime.now().minus(30, ChronoUnit.DAYS); // Retain data for 30 days
 //        LocalDateTime retentionDate = LocalDateTime.now().minusYears(3); // Retain data for 3 years
-        LocalDateTime retentionDate = LocalDateTime.now().minusMinutes(10); // Retain data for 10 minutes
+//        LocalDateTime retentionDate = LocalDateTime.now().minusMinutes(10); // Retain data for 10 minutes
+
+//        LocalDateTime retentionDate = LocalDateTime.now().minus(dataRetentionConfig.getAdm100());
+        LocalDateTime retentionDate = LocalDateTime.now().minus(dataRetentionConfig.getRetentionPeriod());
 
 
         // Define your query to retrieve documents based on the retention policy
