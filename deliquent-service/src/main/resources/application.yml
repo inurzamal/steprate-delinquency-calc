@@ -8,7 +8,8 @@ scheduled-time: 5m
 
 data-retention:
   retention-period: PT5M
-  adm100: P3Y
+#  adm100: P3Y
+  adm100: PT1576800M
   adm150: P1Y
   isy100: P6Y
 
