@@ -30,10 +30,8 @@ public class DataRetentionTaskTest {
     @Test
     public void testDeleteOldData() {
         // Set up the test case
-//        LocalDateTime retentionDate = LocalDateTime.now().minus(3, ChronoUnit.YEARS);
 //        Mockito.when(dataRetentionConfig.getRetentionPeriod()).thenReturn(Duration.ofSeconds(3 * 365 * 24 * 60 * 60));
-        Mockito.when(dataRetentionConfig.getRetentionPeriod()).thenReturn(Duration.ofMinutes(3 * 365 * 24 * 60 ));
-
+        Mockito.when(dataRetentionConfig.getRetentionPeriod()).thenReturn(Duration.parse("PT10M"));
 
         // Execute the method to be tested
         dataRetentionTask.deleteOldData();
