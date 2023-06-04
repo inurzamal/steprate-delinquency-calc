@@ -1,5 +1,6 @@
 package com.nur.service;
 
+import com.nur.model.AmortizationRequest;
 import com.nur.model.AmortizationScheduleItem;
 import org.springframework.stereotype.Service;
 
@@ -12,35 +13,64 @@ public class AmortizationService {
 
     public static final int MONTHS_IN_YEAR = 12;
 
-    public List<AmortizationScheduleItem> calculateAmortizationSchedule(double loanAmount, double annualInterestRate, int loanTermInYears) {
-        double monthlyInterestRate = (annualInterestRate / 100) / MONTHS_IN_YEAR;
-        int numberOfPayments = loanTermInYears * MONTHS_IN_YEAR;
-        double monthlyPayment = calculateMonthlyPayment(loanAmount, monthlyInterestRate, numberOfPayments);
+//    public List<AmortizationScheduleItem> calculateAmortizationSchedule(double loanAmount, double annualInterestRate, int loanTermInYears) {
+//        double monthlyInterestRate = (annualInterestRate / 100) / MONTHS_IN_YEAR;
+//        int numberOfPayments = loanTermInYears * MONTHS_IN_YEAR;
+//        double monthlyPayment = calculateMonthlyPayment(loanAmount, monthlyInterestRate, numberOfPayments);
+//
+//        List<AmortizationScheduleItem> schedule = new ArrayList<>();
+//
+//        double remainingBalance = loanAmount;
+//
+//        for (int installmentNo = 1; installmentNo <= numberOfPayments; installmentNo++) {
+//            double interestPayment = remainingBalance * monthlyInterestRate;
+//            double principalPayment = monthlyPayment - interestPayment;
+//            remainingBalance -= principalPayment;
+//
+//            LocalDate dueDate = LocalDate.now().plusMonths(installmentNo);
+//
+//            AmortizationScheduleItem scheduleItem = new AmortizationScheduleItem();
+//            scheduleItem.setInstallmentNo(installmentNo);
+//            scheduleItem.setDueDate(dueDate);
+//            scheduleItem.setInstallmentAmount(monthlyPayment);
+//            scheduleItem.setPrincipal(principalPayment);
+//            scheduleItem.setInterest(interestPayment);
+//            scheduleItem.setOutstandingPrincipal(remainingBalance);
+//
+//            schedule.add(scheduleItem);
+//        }
+//
+//        return schedule;
+//    }
+public List<AmortizationScheduleItem> calculateAmortizationSchedule(AmortizationRequest amortizationRequest) {
+    double monthlyInterestRate = (amortizationRequest.getAnnualInterestRate() / 100) / MONTHS_IN_YEAR;
+    int numberOfPayments = amortizationRequest.getLoanTermInYears() * MONTHS_IN_YEAR;
+    double monthlyPayment = calculateMonthlyPayment(amortizationRequest.getLoanAmount(), monthlyInterestRate, numberOfPayments);
 
-        List<AmortizationScheduleItem> schedule = new ArrayList<>();
+    List<AmortizationScheduleItem> schedule = new ArrayList<>();
 
-        double remainingBalance = loanAmount;
+    double remainingBalance = amortizationRequest.getLoanAmount();
 
-        for (int installmentNo = 1; installmentNo <= numberOfPayments; installmentNo++) {
-            double interestPayment = remainingBalance * monthlyInterestRate;
-            double principalPayment = monthlyPayment - interestPayment;
-            remainingBalance -= principalPayment;
+    for (int installmentNo = 1; installmentNo <= numberOfPayments; installmentNo++) {
+        double interestPayment = remainingBalance * monthlyInterestRate;
+        double principalPayment = monthlyPayment - interestPayment;
+        remainingBalance -= principalPayment;
 
-            LocalDate dueDate = LocalDate.now().plusMonths(installmentNo);
+        LocalDate dueDate = LocalDate.now().plusMonths(installmentNo);
 
-            AmortizationScheduleItem scheduleItem = new AmortizationScheduleItem();
-            scheduleItem.setInstallmentNo(installmentNo);
-            scheduleItem.setDueDate(dueDate);
-            scheduleItem.setInstallmentAmount(monthlyPayment);
-            scheduleItem.setPrincipal(principalPayment);
-            scheduleItem.setInterest(interestPayment);
-            scheduleItem.setOutstandingPrincipal(remainingBalance);
+        AmortizationScheduleItem scheduleItem = new AmortizationScheduleItem();
+        scheduleItem.setInstallmentNo(installmentNo);
+        scheduleItem.setDueDate(dueDate);
+        scheduleItem.setInstallmentAmount(monthlyPayment);
+        scheduleItem.setPrincipal(principalPayment);
+        scheduleItem.setInterest(interestPayment);
+        scheduleItem.setOutstandingPrincipal(remainingBalance);
 
-            schedule.add(scheduleItem);
-        }
-
-        return schedule;
+        schedule.add(scheduleItem);
     }
+
+    return schedule;
+}
 
     /*
      *  M = P * r * (1 + r)^n) / ((1 + r)^n - 1)
