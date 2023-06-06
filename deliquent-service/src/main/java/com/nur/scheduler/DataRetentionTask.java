@@ -1,24 +1,21 @@
 package com.nur.scheduler;
 
 import com.nur.model.Book;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-@Component
+@Service
+@AllArgsConstructor
 public class DataRetentionTask {
-
-    @Autowired
     private MongoTemplate mongoTemplate;
-
-    @Autowired
     private DataRetentionConfig dataRetentionConfig;
 
 /*
