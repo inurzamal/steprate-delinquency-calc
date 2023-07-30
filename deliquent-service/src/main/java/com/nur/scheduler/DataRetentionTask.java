@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 public class DataRetentionTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataRetentionTask.class);
+    public static final String TABLE_NAME = "books";
     private MongoTemplate mongoTemplate;
     private DataRetentionConfig dataRetentionConfig;
     private RetentionAuditRepository auditRepository;
@@ -55,11 +56,7 @@ public class DataRetentionTask {
             LOGGER.info("Deletion of old data completed. Number of records deleted: {}", deletedCount);
 
             if(deletedCount>0){
-                RetentionAudit retentionAudit = new RetentionAudit();
-                retentionAudit.setRecordCount(deletedCount);
-                retentionAudit.setTableName("books");
-                retentionAudit.setPurgeTime(LocalDateTime.now());
-                auditRepository.save(retentionAudit);
+                createRetentionAudit(TABLE_NAME, deletedCount);
             }
         } catch (DataAccessException e) {
             // Handle data access-related exceptions (e.g., MongoDB connection issues, query errors)
@@ -68,6 +65,20 @@ public class DataRetentionTask {
             // Handle the exception
             LOGGER.error("An error occurred while deleting old data: {}", e.getMessage(), e);
             // You can choose to rethrow the exception if needed or perform other error handling logic.
+        }
+    }
+
+    private void createRetentionAudit(String tableName, long deletedCount) {
+        try {
+            RetentionAudit retentionAudit = new RetentionAudit();
+            retentionAudit.setRecordCount(deletedCount);
+            retentionAudit.setTableName(tableName);
+            retentionAudit.setPurgeTime(LocalDateTime.now());
+            auditRepository.save(retentionAudit);
+        } catch (DataAccessException e) {
+            LOGGER.error("Error while creating retention audit: {}", e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.error("An unexpected error occurred while creating retention audit: {}", e.getMessage(), e);
         }
     }
 }
