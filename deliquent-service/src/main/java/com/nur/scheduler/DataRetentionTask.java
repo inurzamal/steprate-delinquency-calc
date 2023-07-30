@@ -6,6 +6,7 @@ import com.nur.model.Book;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -37,26 +38,36 @@ public class DataRetentionTask {
 
     @Scheduled(cron = "${scheduled-time}")
     public void deleteOldData() {
+
+        try {
 //        LocalDateTime retentionDate = LocalDateTime.now().minusYears(3); // Retain data for 3 years
 //        LocalDateTime retentionDate = LocalDateTime.now().minusMinutes(10); // Retain data for 10 minutes
 
-        LocalDateTime retentionDate = LocalDateTime.now().minusMinutes(dataRetentionConfig.getRetentionPeriod());
+            LocalDateTime retentionDate = LocalDateTime.now().minusMinutes(dataRetentionConfig.getRetentionPeriod());
 
-        // Define your query to retrieve documents based on the retention policy
-        Query query = new Query();
-        query.addCriteria(Criteria.where("promoDate").lt(retentionDate));
+            // Define your query to retrieve documents based on the retention policy
+            Query query = new Query();
+            query.addCriteria(Criteria.where("promoDate").lt(retentionDate));
 
-        // Delete documents matching the query
-        DeleteResult deleteResult = mongoTemplate.remove(query, Book.class);
-        long deletedCount = deleteResult.getDeletedCount();
-        LOGGER.info("Deletion of old data completed. Number of records deleted: {}", deletedCount);
+            // Delete documents matching the query
+            DeleteResult deleteResult = mongoTemplate.remove(query, Book.class);
+            long deletedCount = deleteResult.getDeletedCount();
+            LOGGER.info("Deletion of old data completed. Number of records deleted: {}", deletedCount);
 
-        if(deletedCount>0){
-            RetentionAudit retentionAudit = new RetentionAudit();
-            retentionAudit.setRecordCount(deletedCount);
-            retentionAudit.setTableName("books");
-            retentionAudit.setPurgeTime(LocalDateTime.now());
-            auditRepository.save(retentionAudit);
+            if(deletedCount>0){
+                RetentionAudit retentionAudit = new RetentionAudit();
+                retentionAudit.setRecordCount(deletedCount);
+                retentionAudit.setTableName("books");
+                retentionAudit.setPurgeTime(LocalDateTime.now());
+                auditRepository.save(retentionAudit);
+            }
+        } catch (DataAccessException e) {
+            // Handle data access-related exceptions (e.g., MongoDB connection issues, query errors)
+            LOGGER.error("Error while deleting old data: {}", e.getMessage(), e);
+        } catch (Exception e) {
+            // Handle the exception
+            LOGGER.error("An error occurred while deleting old data: {}", e.getMessage(), e);
+            // You can choose to rethrow the exception if needed or perform other error handling logic.
         }
     }
 }
