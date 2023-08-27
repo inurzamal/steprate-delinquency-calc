@@ -3,6 +3,8 @@ package com.nur.scheduler;
 
 import com.mongodb.client.result.DeleteResult;
 import com.nur.model.Book;
+import com.nur.model.RetentionAudit;
+import com.nur.repository.RetentionAuditRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +16,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Service
 @AllArgsConstructor
@@ -75,10 +76,22 @@ public class DataRetentionTask {
             retentionAudit.setTableName(tableName);
             retentionAudit.setPurgeTime(LocalDateTime.now());
             auditRepository.save(retentionAudit);
+
+            deleteDestructionLogs();
+
         } catch (DataAccessException e) {
             LOGGER.error("Error while creating retention audit: {}", e.getMessage(), e);
         } catch (Exception e) {
             LOGGER.error("An unexpected error occurred while creating retention audit: {}", e.getMessage(), e);
         }
+    }
+
+    private void deleteDestructionLogs() {
+        LocalDateTime retentionDate = LocalDateTime.now().minusMinutes(dataRetentionConfig.getAdm100());
+        LOGGER.info("Srating deletion of old data from destructionLogs...");
+        Query query = new Query();
+        query.addCriteria(Criteria.where("purgeTime").lt(retentionDate));
+        DeleteResult deleteResult = mongoTemplate.remove(query, RetentionAudit.class);
+        LOGGER.info("Number of document deleted from destructionLogs: {}",deleteResult.getDeletedCount());
     }
 }

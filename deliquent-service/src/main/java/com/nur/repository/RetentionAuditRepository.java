@@ -1,5 +1,6 @@
-package com.nur.scheduler;
+package com.nur.repository;
 
+import com.nur.model.RetentionAudit;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

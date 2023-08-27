@@ -1,4 +1,4 @@
-package com.nur.scheduler;
+package com.nur.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
