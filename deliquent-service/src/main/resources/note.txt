@@ -1,0 +1,19 @@
+import java.text.DecimalFormat;
+
+// ...
+
+// Inside your controller's delinquencyCalculation method
+@PostMapping(value = "/api/steprate/delinquency/v1/calculate", produces = {"application/json"}, consumes = {"application/json"})
+public ResponseEntity<List<DelinquencyMonthRecord>> delinquencyCalculation(@RequestBody DelinquencyRequest delinquencyRequest) {
+    List<DelinquencyMonthRecord> delinquencyMonthlyRecords = delinquencyCalcService.getDelinquencyMonthlyRecords(delinquencyRequest);
+
+    // Format interestRate as percentage
+    DecimalFormat percentageFormat = new DecimalFormat("##.#%");
+    for (DelinquencyMonthRecord record : delinquencyMonthlyRecords) {
+        double interestRate = record.getInterestRate();
+        String formattedInterestRate = percentageFormat.format(interestRate);
+        record.setInterestRate(Double.parseDouble(formattedInterestRate));
+    }
+
+    return new ResponseEntity<>(delinquencyMonthlyRecords, HttpStatus.OK);
+}
