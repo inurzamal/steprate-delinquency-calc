@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class DeliquencyController {
@@ -21,6 +22,21 @@ public class DeliquencyController {
     @PostMapping(value = "/api/steprate/delinquency/v1/calculate", produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<List<DelinquencyMonthRecord>> delinquencyCalculation(@RequestBody DelinquencyRequest delinquencyRequest){
         List<DelinquencyMonthRecord> delinquencyMonthlyRecords = delinquencyCalcService.getDelinquencyMonthlyRecords(delinquencyRequest);
-        return new ResponseEntity<>(delinquencyMonthlyRecords, HttpStatus.OK);
+        List<DelinquencyMonthRecord> delinquencyMonthRecordList = delinquencyMonthlyRecords.stream().map(record -> mapToFormattedMonthlyRecords(record)).collect(Collectors.toList());
+//        List<DelinquencyMonthRecord> delinquencyMonthRecordList = delinquencyMonthlyRecords.stream().map(this:: mapToFormattedMonthlyRecords).collect(Collectors.toList());
+        return new ResponseEntity<>(delinquencyMonthRecordList, HttpStatus.OK);
     }
+
+    private DelinquencyMonthRecord mapToFormattedMonthlyRecords(DelinquencyMonthRecord record) {
+        DelinquencyMonthRecord monthRecord = new DelinquencyMonthRecord();
+        monthRecord.setPrincipleBalance(record.getPrincipleBalance());
+        monthRecord.setPrincipleAndInterest(record.getPrincipleAndInterest());
+        monthRecord.setInterestRate(record.getInterestRate()*100);
+        monthRecord.setDueDate(record.getDueDate());
+        monthRecord.setInterest(record.getInterest());
+        monthRecord.setPrinciple(record.getPrinciple());
+        return monthRecord;
+    }
+
+
 }

@@ -24,7 +24,7 @@ public class DelinquencyCalcService {
             nextRecord.setInterestRate(formatDecimal(previousRecord.getInterestRate()));
             nextRecord.setDueDate(previousRecord.getDueDate().plusMonths(1));
 
-            nextRecord.setInterest(formatDecimal((nextRecord.getPrincipleBalance() * nextRecord.getInterestRate() / 12))*100);
+            nextRecord.setInterest(formatDecimal(nextRecord.getPrincipleBalance() * nextRecord.getInterestRate() / 12));
             nextRecord.setPrinciple(formatDecimal(nextRecord.getPrincipleAndInterest() - nextRecord.getInterest()));
             nextRecord.setPrincipleBalance(formatDecimal(nextRecord.getPrincipleBalance() - nextRecord.getPrinciple()));
             records.add(nextRecord);
@@ -37,10 +37,10 @@ public class DelinquencyCalcService {
         DelinquencyMonthRecord firstRecord = new DelinquencyMonthRecord();
         firstRecord.setPrincipleBalance(formatDecimal(delinquencyRequest.getPrincipleBalance()));
         firstRecord.setPrincipleAndInterest(formatDecimal(delinquencyRequest.getPrincipleAndInterest()));
-        firstRecord.setInterestRate(delinquencyRequest.getInterestRate()/100);
+        firstRecord.setInterestRate(delinquencyRequest.getInterestRate());
         firstRecord.setDueDate(delinquencyRequest.getCurrentDueDate());
 
-        firstRecord.setInterest(formatDecimal((firstRecord.getPrincipleBalance() * firstRecord.getInterestRate() / 12) * 100));
+        firstRecord.setInterest(formatDecimal(firstRecord.getPrincipleBalance() * firstRecord.getInterestRate() / 12));
         firstRecord.setPrinciple(formatDecimal(firstRecord.getPrincipleAndInterest() - firstRecord.getInterest()));
         firstRecord.setPrincipleBalance(formatDecimal(firstRecord.getPrincipleBalance() - firstRecord.getPrinciple()));
         return firstRecord;
