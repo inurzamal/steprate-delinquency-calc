@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,23 +18,7 @@ public class DeliquencyController {
 
     @Autowired
     private DelinquencyCalcService delinquencyCalcService;
-
-/*
-    private DelinquencyMonthRecord mapToFormattedMonthlyRecords(DelinquencyMonthRecord record) {
-        DelinquencyMonthRecord monthRecord = new DelinquencyMonthRecord();
-        monthRecord.setPrincipleBalance(record.getPrincipleBalance());
-        monthRecord.setPrincipleAndInterest(record.getPrincipleAndInterest());
-
-        // Format the interest rate as a percentage with the '%' symbol
-        double interestRatePercentage = record.getInterestRate() * 100;
-        monthRecord.setInterestRate(interestRatePercentage + "%");
-
-        monthRecord.setDueDate(record.getDueDate());
-        monthRecord.setInterest(record.getInterest());
-        monthRecord.setPrinciple(record.getPrinciple());
-        return monthRecord;
-    }
-*/
+    private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
     @PostMapping(value = "/api/steprate/delinquency/v1/calculate", produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<List<DelinquencyMonthRecord>> delinquencyCalculation(@RequestBody DelinquencyRequest delinquencyRequest){
@@ -47,11 +32,24 @@ public class DeliquencyController {
         DelinquencyMonthRecord monthRecord = new DelinquencyMonthRecord();
         monthRecord.setPrincipleBalance(record.getPrincipleBalance());
         monthRecord.setPrincipleAndInterest(record.getPrincipleAndInterest());
-        monthRecord.setInterestRate(record.getInterestRate()*100);
+        monthRecord.setInterestRate(formatDecimal(record.getInterestRate() * 100));
         monthRecord.setDueDate(record.getDueDate());
         monthRecord.setInterest(record.getInterest());
         monthRecord.setPrinciple(record.getPrinciple());
         return monthRecord;
+    }
+
+//    private String formatDecimal(Double decimal, String pattern) {
+//        DecimalFormat df = new DecimalFormat(pattern);
+//        return df.format(df);
+//    }
+
+    private static double formatDecimal(double value){
+        try {
+            return Double.parseDouble(decimalFormat.format(value));
+        }catch (NumberFormatException exception){
+            return value;
+        }
     }
 
 }

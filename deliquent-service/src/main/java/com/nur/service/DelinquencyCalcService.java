@@ -21,7 +21,7 @@ public class DelinquencyCalcService {
             DelinquencyMonthRecord nextRecord = new DelinquencyMonthRecord();
             nextRecord.setPrincipleBalance(formatDecimal(previousRecord.getPrincipleBalance()));
             nextRecord.setPrincipleAndInterest(formatDecimal(previousRecord.getPrincipleAndInterest()));
-            nextRecord.setInterestRate(formatDecimal(previousRecord.getInterestRate()));
+            nextRecord.setInterestRate(previousRecord.getInterestRate());
             nextRecord.setDueDate(previousRecord.getDueDate().plusMonths(1));
 
             nextRecord.setInterest(formatDecimal(nextRecord.getPrincipleBalance() * nextRecord.getInterestRate() / 12));
