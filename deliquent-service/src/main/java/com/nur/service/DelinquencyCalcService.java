@@ -2,6 +2,7 @@ package com.nur.service;
 
 import com.nur.model.DelinquencyMonthRecord;
 import com.nur.model.DelinquencyRequest;
+import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Data
 public class DelinquencyCalcService {
     private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
     public List<DelinquencyMonthRecord> getDelinquencyMonthlyRecords(DelinquencyRequest delinquencyRequest){

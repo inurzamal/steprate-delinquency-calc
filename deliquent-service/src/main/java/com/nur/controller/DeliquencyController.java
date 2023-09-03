@@ -22,10 +22,16 @@ public class DeliquencyController {
 
     @PostMapping(value = "/api/steprate/delinquency/v1/calculate", produces = {"application/json"}, consumes = {"application/json"})
     public ResponseEntity<List<DelinquencyMonthRecord>> delinquencyCalculation(@RequestBody DelinquencyRequest delinquencyRequest){
-        List<DelinquencyMonthRecord> delinquencyMonthlyRecords = delinquencyCalcService.getDelinquencyMonthlyRecords(delinquencyRequest);
+        try {
+            List<DelinquencyMonthRecord> delinquencyMonthlyRecords = delinquencyCalcService.getDelinquencyMonthlyRecords(delinquencyRequest);
 //        List<DelinquencyMonthRecord> delinquencyMonthRecordList = delinquencyMonthlyRecords.stream().map(record -> mapToFormattedMonthlyRecords(record)).collect(Collectors.toList());
-        List<DelinquencyMonthRecord> delinquencyMonthRecordList = delinquencyMonthlyRecords.stream().map(this:: mapToFormattedMonthlyRecords).collect(Collectors.toList());
-        return new ResponseEntity<>(delinquencyMonthRecordList, HttpStatus.OK);
+            List<DelinquencyMonthRecord> delinquencyMonthRecordList = delinquencyMonthlyRecords.stream().map(this:: mapToFormattedMonthlyRecords).collect(Collectors.toList());
+            return new ResponseEntity<>(delinquencyMonthRecordList, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     private DelinquencyMonthRecord mapToFormattedMonthlyRecords(DelinquencyMonthRecord record) {
