@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class SearchResponse {
     @JsonProperty
-    private String title;
+    private String bookTitle;
     @JsonProperty
     private String author;
     @JsonProperty

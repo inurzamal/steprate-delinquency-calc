@@ -1,12 +1,14 @@
 package com.nur;
 
+import java.time.format.DateTimeFormatter;
+
 public final class BookConstants {
-//    public static final String DOCUMENT_NOT_FOUND = "Specified Document (&bookId) is not found";
-    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    /*
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+    /**
      * assign database fields into constants
      */
-    public static final String BOOK_TITLE = "title";
+    public static final String BOOK_TITLE = "bookTitle";
     public static final String BOOK_AUTHOR = "author"; //AUTHOR_CITY = "author.address.city";
     public static final String BOOK_ISBN = "isbn";
     public static final String PRICE = "price";

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchRequest {
-    private String title;
+    private String bookTitle;
     private String author;
     private String isbn;
     private String price;

@@ -6,16 +6,17 @@ import com.nur.model.SearchRequest;
 import com.nur.model.SearchResponse;
 import com.nur.repository.BookRepository;
 import com.nur.repository.BookRepositoryImpl;
-import org.springframework.beans.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Service
 public class BookService {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(BookService.class);
 
     @Autowired
     private BookRepository bookRepository;
@@ -44,7 +45,7 @@ public class BookService {
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("book is not present"));
 
-            existingBook.setTitle(book.getTitle());
+            existingBook.setBookTitle(book.getBookTitle());
             existingBook.setAuthor(book.getAuthor());
             existingBook.setIsbn(book.getIsbn());
             return bookRepository.save(existingBook);
@@ -59,75 +60,19 @@ public class BookService {
         return "Book not available";
     }
 
-//    public List<SearchResponse> search(SearchRequest searchRequest){
-//        List<Book> bookRecords = null;
-//
-//        if (isSearchReqEmpty(searchRequest)){
-//            bookRepository.findAll();
-//        }
-//        else {
-//            String title = searchRequest.getTitle();
-//            String author = searchRequest.getAuthor();
-//            String isbn = searchRequest.getIsbn();
-//            Double price = searchRequest.getPrice();
-//            LocalDate promoDate = searchRequest.getPromoDate();
-//            LocalDate releaseDate = searchRequest.getReleaseDate();
-//
-//            Book book = new Book();
-//
-//            if (title != null && !title.isEmpty()){
-//                book.setTitle(title);
-//            }
-//            if (author != null && !author.isEmpty()){
-//                book.setAuthor(author);
-//            }
-//            if (isbn != null && !isbn.isEmpty()){
-//                book.setIsbn(isbn);
-//            }
-//            if (price != null){
-//                book.setPrice(price);
-//            }
-//            if (promoDate != null && releaseDate != null){
-//                book.setPromoDate(promoDate);
-//                book.setPromoDate(releaseDate);
-//            }
-//
-//            Example<Book> of = Example.of(book);
-//            bookRecords = bookRepository.findAll(of);
-//        }
-//
-//        List<SearchResponse> searchResponses = new ArrayList<>();
-//
-//        for (Book bookRecord: bookRecords){
-//            SearchResponse sr = new SearchResponse();
-//            BeanUtils.copyProperties(bookRecord, sr);
-//            searchResponses.add(sr);
-//
-//        }
-//
-//        return searchResponses;
-//    }
-
-//    private boolean isSearchReqEmpty(SearchRequest searchRequest) {
-//        if ( searchRequest.getTitle() != null || !searchRequest.getTitle().equals("")){
-//            return false;
-//        }
-//
-//        return true;
-//    }
-
     public List<Book> getBookByName(String bookName){
         return bookRepositoryImpl.findBookByName(bookName);
     }
 
     public List<SearchResponse> mongoSearch(SearchRequest searchRequest){
+        LOGGER.info("Method mongoSearch start..");
         Map<String, String> searchCriteriaMap = getSearchCriteriaMap(searchRequest);
         List<Book> bookList = bookRepositoryImpl.searchByCriteria(searchCriteriaMap);
 
         List<SearchResponse> searchResponses = new ArrayList<>();
         for (Book book: bookList){
             SearchResponse seachRecord = new SearchResponse();
-            seachRecord.setTitle(book.getTitle());
+            seachRecord.setBookTitle(book.getBookTitle());
             seachRecord.setAuthor(book.getAuthor());
             seachRecord.setIsbn(book.getIsbn());
             seachRecord.setPrice(book.getPrice());
@@ -135,7 +80,7 @@ public class BookService {
             seachRecord.setReleaseDate(book.getReleaseDate());
             searchResponses.add(seachRecord);
         }
-
+        LOGGER.info("Method mongoSearch end..");
         return searchResponses;
     }
 
@@ -146,26 +91,31 @@ public class BookService {
      * if searchRequest is not empty then add to map, key will be db field, value is searchRequest field
      */
     private Map<String, String> getSearchCriteriaMap(SearchRequest searchRequest) {
-
+        LOGGER.info("Method getSearchCriteriaMap start.");
         Map<String, String> map = new HashMap<>();
-        //In the map, we need to add db fieldName as key and search request fields as value
-//        map.put(BookConstants.BOOK_TITLE, searchRequest.getTitle());
-        checkAndAddToMap(map, searchRequest.getTitle(), BookConstants.BOOK_TITLE);
+
+        /* In the map, we need to add db fieldName as key and search request fields as value */
+       //map.put(BookConstants.BOOK_TITLE, searchRequest.getTitle());
+
+        checkAndAddToMap(map, searchRequest.getBookTitle(), BookConstants.BOOK_TITLE);
         checkAndAddToMap(map, searchRequest.getAuthor(), BookConstants.BOOK_AUTHOR);
         checkAndAddToMap(map, searchRequest.getIsbn(), BookConstants.BOOK_ISBN);
         checkAndAddToMap(map, searchRequest.getPrice(), BookConstants.PRICE);
         checkAndAddToMap(map, searchRequest.getPromoDate(), BookConstants.PROMOTION_DATE);
         checkAndAddToMap(map, searchRequest.getReleaseDate(), BookConstants.PUBLISHED_DATE);
+        LOGGER.info("Method getSearchCriteriaMap end.");
         return map;
     }
 
-    /*
+    /**
     * if attribute or searchRequest is not empty then add to map
      */
     private void checkAndAddToMap(Map<String, String> map, String attribute, String mapKey) {
+        LOGGER.info("Method checkAndAddToMap start.");
         if(attribute != null && !attribute.isEmpty()){
             map.put(mapKey, attribute);
         }
+        LOGGER.info("Method checkAndAddToMap end.");
     }
 
 }

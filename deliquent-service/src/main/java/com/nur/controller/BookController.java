@@ -3,8 +3,9 @@ package com.nur.controller;
 import com.nur.model.Book;
 import com.nur.model.SearchRequest;
 import com.nur.model.SearchResponse;
-import com.nur.repository.BookRepository;
 import com.nur.service.BookService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/books")
 public class BookController {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(BookController.class);
 
     @Autowired
     private BookService bookService;
@@ -58,12 +61,6 @@ public class BookController {
         return new ResponseEntity<>(msg, HttpStatus.NO_CONTENT);
     }
 
-//    @GetMapping("/search")
-//    public ResponseEntity<List<SearchResponse> > searchBook(@RequestBody SearchRequest searchRequest){
-//        List<SearchResponse> searchResponses = bookService.search(searchRequest);
-//        return new ResponseEntity<>(searchResponses, HttpStatus.OK);
-//    }
-
     @GetMapping("/name")
     public ResponseEntity<List<Book>> getBooksByName(@RequestParam("bookName") String bookName){
         List<Book> bookList = bookService.getBookByName(bookName);
@@ -72,8 +69,15 @@ public class BookController {
 
     @GetMapping("/mongoSearch")
     public ResponseEntity<List<SearchResponse> > mongoSearchBook(@RequestBody SearchRequest searchRequest){
-        List<SearchResponse> searchResponses = bookService.mongoSearch(searchRequest);
-        return new ResponseEntity<>(searchResponses, HttpStatus.OK);
+        try {
+            LOGGER.info(String.format("Searching in BookController with search request: %s",searchRequest));
+            List<SearchResponse> searchResponses = bookService.mongoSearch(searchRequest);
+            LOGGER.info("Search completed in BookController");
+            return new ResponseEntity<>(searchResponses, HttpStatus.OK);
+        } catch (Exception e) {
+            LOGGER.error("An error occurred during mongoSearchBook() in controller BookController API {} api/v1/books/mongoSearch"+ e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }
