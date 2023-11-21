@@ -36,10 +36,14 @@ public class BookRepositoryImpl {
 
         searchCriteriaMap.forEach((key, value) -> {
             if(key.equalsIgnoreCase(BookConstants.PROMOTION_DATE)){
-                query.addCriteria(Criteria.where(key).gte(LocalDateTime.parse(value, BookConstants.DATE_TIME_FORMATTER).with(LocalTime.MIN)));
+//                query.addCriteria(Criteria.where(key).gte(LocalDateTime.parse(value, BookConstants.DATE_TIME_FORMATTER).with(LocalTime.MIN))); // date ranges with recent dates
+                LocalDateTime dateTime = LocalDateTime.parse(value, BookConstants.DATE_TIME_FORMATTER);
+                LocalDateTime startOfDay = dateTime.with(LocalTime.MIN);
+                LocalDateTime endOfDay = dateTime.with(LocalTime.MAX);
+                query.addCriteria(Criteria.where(key).gte(startOfDay).lte(endOfDay)); //exact date search
             }
             else if(key.equalsIgnoreCase(BookConstants.PUBLISHED_DATE)){
-                query.addCriteria(Criteria.where(key).lte(LocalDateTime.parse(value, BookConstants.DATE_TIME_FORMATTER).with(LocalTime.MAX)));
+                query.addCriteria(Criteria.where(key).lte(LocalDateTime.parse(value, BookConstants.DATE_TIME_FORMATTER).with(LocalTime.MAX))); // older date upto the given date with maximum time of the day
             }
             else if(key.equalsIgnoreCase(BookConstants.PRICE)){
                 query.addCriteria(Criteria.where(key).is(Double.valueOf(value)));
