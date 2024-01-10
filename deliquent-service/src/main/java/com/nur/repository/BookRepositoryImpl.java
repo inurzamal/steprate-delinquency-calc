@@ -27,7 +27,7 @@ public class BookRepositoryImpl {
 
    public List<Book> findBookByName(String bookName){
         Query query = new Query();
-        query.addCriteria(Criteria.where("bookTitle").is(bookName));
+        query.addCriteria(Criteria.where("bookTitle").is(Pattern.compile(bookName, Pattern.CASE_INSENSITIVE)));
         return mongoTemplate.find(query, Book.class);
     }
 
